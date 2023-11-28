@@ -1,1 +1,133 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Search</title>
+  <style>
+    #imageNameInput {
+      width: 15rem;
+      height: 2rem;
+    }
+
+    #result img {
+      max-width: 100%;
+      max-height: 100%
+      border-radius: 10px; /* Adjust the value to change the curve of the corners */
+    }
+    #searchbutton{
+      height:2.4rem;
+    }
+    #suggestionTable {
+      width: 15rem;
+      border-collapse: collapse;
+    }
+    #suggestionTable td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <input type="text" id="imageNameInput" placeholder="Enter Image Name" oninput="filterImageOptions()" onfocus="clearResult()">
+  <button onclick="searchImage()" id="searchbutton">Search Image</button>
+  <table id="suggestionTable"></table>
+  <br>
+  <div id="result"></div>
+
+  <script>
+    const imageNames = [
+       "panvel", "khandeshwar", "mansa rovar", "kharghar", "belapur",
+      "seawood daraw e", "nerul", "juinagar", "sanpada", "vashi", "mankhurd", "govandi","chembur", "tilak nagar", "kurla", "chuna bhatti", "gtb nagar", "goregoan", "ram mandir",
+      "jogeshwari", "andheri", "ville parle", "santa cruz", "khar road", "bandra", "mahim jn",
+      "kings circle", "vadala road", "sewri", "cotton green", "reay road.", "dockyard road",
+      "sandhurst rd.", "masjid bunder", "csmt", "kopar khairane",
+      "churchgate", "marine lines", "charni road", "grant road",
+      "mumbai central", "mahalaxmi", "lower parel", "prabhadevi", "dadar", "matunga road",
+      "malad", "kandivali", "borivali", "dahisar", "mira road", "bhayandar", "naigaon",
+      "vasai rd.", "nallasopara", "virar", "vaitarna", "saphale", "kelve rd.", "palghar",
+      "umroli", "boisar", "vangaon", "dahanu rd.", "byculla", "chinchpokali", "currey road",
+      "parel", "matunga", "sion", "vidya vihar", "ghatkopar", "vikhroli", "kanjur marg",
+      "bhandup", "nahur", "mulund", "thane", "mumbra", "diva junction", "kopar", "dombivali",
+      "thakurli", "kalyan", "shahad", "ambivli", "titwala", "khadavali", "vasind", "asangaon",
+      "atgaon", "khardi", "vithalwadi", "ulhasnagar", "ambernath", "badlapur", "vangani",
+      "shelu", "neral", "bhivpuri rd", "karjat", "palasdhari", "kelavali", "dolavali",
+      "lowjee", "khopoli", "airoli", "rabale", "ghansoli", "kalva", "thansit", "umbermali",
+      "kasara", "bamandongri", "kharkopar", "roha", "nidi", "mangaon", "apta", "dativali",
+      "dombivli", "hamarapur", "jite", "juchandra road", "jumapatti", "kaman road", "kasu",
+      "kharbao", "matheran", "nagothane", "nilje", "navade road", "kalamboli", "pen",
+      "rasayani", "somtane", "taloja panchanand", "waterpipe", "turbhe"
+    ];
+
+    function filterImageOptions() {
+      const imageNameInput = document.getElementById('imageNameInput');
+      const inputValue = imageNameInput.value.toLowerCase();
+
+      const suggestions = imageNames.filter(name => name.includes(inputValue));
+
+      // Display suggestions in a table
+      const suggestionTable = document.getElementById('suggestionTable');
+      suggestionTable.innerHTML = '';
+
+      suggestions.forEach(suggestion => {
+        const row = suggestionTable.insertRow();
+        const cell = row.insertCell(0);
+        cell.textContent = suggestion;
+        cell.onclick = function() {
+          imageNameInput.value = suggestion;
+          suggestionTable.innerHTML = ''; // Clear suggestions after selection
+        };
+      });
+    }
+
+    function searchImage() {
+      const imageNameInput = document.getElementById('imageNameInput');
+      const resultDiv = document.getElementById('result');
+
+      // Trim spaces explicitly before further processing
+      const imageName = imageNameInput.value.replace(' ', '').toLowerCase();
+
+      if (imageName !== '') {
+        const folderPath = './image/';
+        const supportedFormats = ['jpg', 'jpeg', 'png', 'gif']; // Add more formats as needed
+        let imagePath = '';
+
+        // Check each supported format
+        for (const format of supportedFormats) {
+          const fullImagePath = `${folderPath}${imageName}.${format}`;
+          // Check if the image with the current format exists
+          if (imageExists(fullImagePath)) {
+            imagePath = fullImagePath;
+            break; // Stop checking if the image is found
+          }
+        }
+
+        if (imagePath !== '') {
+          // Set the src attribute of the img element directly
+          resultDiv.innerHTML = `<img src="${imagePath}" alt="Found Image">`;
+        } else {
+          resultDiv.innerHTML = 'Image not found.';
+        }
+      } else {
+        resultDiv.innerHTML = 'Please enter an image name.';
+      }
+    }
+
+    // Function to check if an image exists
+    function imageExists(url) {
+      const http = new XMLHttpRequest();
+      http.open('HEAD', url, false);
+      http.send();
+      return http.status !== 404;
+    }
+
+    function clearResult() {
+      document.getElementById('result').innerHTML = ''; // Clear the result when input is focused
+    }
+  </script>
+
+</body>
+</html>
